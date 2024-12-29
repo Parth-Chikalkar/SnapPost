@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SnapPost</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-zinc-900">
+
+       <div class="w-full nav h-16 lg:p-5 flex justify-between items-center ">
+        <div class="flex justify-center  items-center">
+            <img src="https://tse2.mm.bing.net/th?id=OIP.rfPfLFlZ3Y-DlOxxHPQKzgHaHa&pid=Api&P=0&h=180" class="h-12  rounded-full" alt="">
+            <h1 class="text-2xl italic text-white">SnapPost</h1>
+
+        </div>
+        <div>
+        <% if (!dataa || !dataa.username  ) {
+           %><div class="justify-between  flex h-full items-center gap-3  lg:gap-10 lg:mr-10 ">
+            <a href="/sign_up" class="px-3 py-2  text-white bg-blue-600 rounded-md ">Sign Up</a>
+            <a href="/login" class="px-3 py-2 text-white bg-blue-600 rounded-md " >Login</a>
+
+         </div> <%  
+        } else { %>
+            <div class="flex items-center  justify-between">
+                
+                <a class="h-full mt-2 flex gap-2  items-center justify-center gap-1 " href="/profile"><img class="h-12  w-12  object-cover object-top  rounded-full" src="<%=  dataa.image_url || "https://up.yimg.com/ib/th?id=OIP.l3waMeOdc8D_y_odZx2IcwHaHa&pid=Api&rs=1&c=1&qlt=95&w=113&h=113" %>" alt="userimg">
+                 <h3 class="text-sm font-semibold  text-white "><%= dataa.username %></h3>
+                </a>
+           
+               
+      
+           <% } %>
+        </div>
+
+
+        </div>
+        
+     
+       
+      
+      
+    </div>
+    <% if (!dataa || !dataa.username  ) {
+        %> <div class="w-96 text-white  flex flex-col items-center mx-auto rounded-md p-5 bg-zinc-800  mt-10">
+            <h1 class="italic text-2xl font-semibold mx-auto">Welcome to SnapPost!</h1>
+            <p class="mt-2 leading-tight text-center">
+                "Welcome to SnapPost, your ultimate destination to share and cherish your favorite moments! Whether it’s a breathtaking sunset, a candid smile, or a milestone memory, our platform lets you effortlessly post, organize, see or like others' posts, and share your photos with the world. Connect with a community of creators, explore stunning visuals, and showcase your unique perspective. Start capturing memories and telling your story today on SnapPost!"
+            </p>
+            <h3 class="mt-5 text-xl font-semibold ">~Created By Parth Sachin Chikalkar</h3>
+        </div>  
+        <% } else { %>
+          <hr class="w-full rounded-md bg-zinc-800 h-1 mt-2">
+            <div class="posts mt-3  ">
+                <% if (!postdata || postdata.length === 0) { %>
+                    <div class="w-full  flex justify-center items-center mt-24">
+                        
+                        <h1 class="text-zinc-400 font-semibold text-2xl ">No posts Yet !</h1>
+                    </div>
+        
+                  <% } else { %>
+                    <% postdata.forEach((val) => { %>
+                      <div class="w-full flex-wrap  flex flex-col gap-3 mx-auto ">
+                        <div class=" lg:px-64">
+                          <div class="bg-zinc-800 lg:p-6 w-full  p-2  rounded-lg">
+                            <div class="w-full flex my-2 rounded-md items-center overflow-hidden justify-left">
+                              <img src="<%= val.profile_url%>" class="rounded-full h-14 w-14 object-cover object-top mb-2" alt="">
+                              
+                              <a href="/profile/<%= val.username %>" class="ml-3 text-xl text-blue-500 font-thin"><%= val.username %></a>
+                              
+                            </div>
+                            <div>
+                            <img src="<%= val.image_url %>" class="w-full  object-cover object-top  bg-pink-300 rounded-md object-cover" alt="">
+                            <p class="mt-2 text-white font-semibold mb-3"><%= val.postDescription || "" %></p>
+                            <!-- <a href="/like/<%= val._id %>" class="px-2 py-2 bg-red-500 text-white  rounded-full my-1">💗 Like</a> -->
+                          </div>
+                        </div>
+                      </div>
+                    <% }) %>
+                  <% } %>
+                  
+            </div>
+        
+            
+   
+        <% } %>
+
+
+    
+    </div>
+   
+      
+    </body>
+</html>
