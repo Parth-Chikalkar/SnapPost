@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const dotEnv = require('dotenv')
 const userModel = require("./Models/UserModel")
 const postModel = require("./Models/PostModel")
 const bcrypt = require('bcrypt');
@@ -8,6 +9,8 @@ const cookieParser = require('cookie-parser');
 const UserModel = require('./Models/UserModel');
 app.use(cookieParser());
 
+dotEnv.config()
+const PORT = process.env.PORT || 3000;
 
 app.set("view engine","ejs");
 app.use(express.json());
@@ -188,4 +191,4 @@ app.get("/postDetail/:id",async (req, res) => {
     const userData = jwt.verify(req.cookies.token,"SecretOfParth?");
     res.render("postDetail",{data,userData});
 })
-app.listen(3000); 
+app.listen(PORT, function(){console.log("Server Is listening on port "+PORT);}); 
