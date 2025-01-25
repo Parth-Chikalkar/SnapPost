@@ -10,7 +10,7 @@ const UserModel = require('./Models/UserModel');
 app.use(cookieParser());
 
 dotEnv.config()
-const PORT = process.env.PORT || 3000;
+
 
 app.set("view engine","ejs");
 app.use(express.json());
