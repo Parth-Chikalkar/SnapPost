@@ -109,8 +109,6 @@ app.get("/", async (req, res) => {
     
         
     const cookie = req.cookies.token;
-    
-    
     let dataa ={};
     let postdata =[];
     if (!cookie) {
@@ -191,4 +189,4 @@ app.get("/postDetail/:id",async (req, res) => {
     const userData = jwt.verify(req.cookies.token,"SecretOfParth?");
     res.render("postDetail",{data,userData});
 })
-app.listen(PORT, function(){console.log("Server Is listening on port "+PORT);}); 
+app.listen(PORT, function(){console.log("Server Is listening on port "+ PORT);}); 
