@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div class="h-screen w-full bg-zinc-900 flex-col flex text-white justify-center items-center">
+       <h1 class="text-2xl" >Please Fill Up !</h1>
+       <form action="/create" method="post" class="mt-5 flex flex-col gap-3">
+        <input type="text" required placeholder="Name" name="name" class="h-10 text-black p-2 w-64 rounded-md bg-blue-100">
+        <input type="text" required placeholder="Username" name="username" class="h-10 text-black p-2 w-64 rounded-md bg-blue-100">
+        <input type="email" required placeholder="email" name="email" class="h-10 text-black p-2 w-64 rounded-md bg-blue-100">
+        <input type="text" required placeholder="Phone Number" name="phnNum" class="h-10 text-black p-2 w-64 rounded-md bg-blue-100">
+        <input type="password" required placeholder="Password" name="password" class="h-10 text-black p-2 w-64 rounded-md bg-blue-100">
+         <textarea type="text" placeholder="Description" name="descriptiom"  class="h-16 resize-none text-black p-2 w-64 rounded-md bg-blue-100"></textarea>   
+        <input type="text" placeholder="Image_url" name="image_url" class="h-10 text-black p-2 w-64 rounded-md bg-blue-100">
+        <button class="px-3 bg-blue-600 text-white rounded-md py-2" type="submit">Submit</button>
+       </form>
+    </div>  
+</body>
+</html>
