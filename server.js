@@ -190,4 +190,6 @@ app.get("/postDetail/:id",async (req, res) => {
     const userData = jwt.verify(req.cookies.token,"SecretOfParth?");
     res.render("postDetail",{data,userData});
 })
-app.listen(PORT, function(){console.log("Server Is listening on port "+ PORT);}); 
+// app.listen(PORT, function(){console.log("Server Is listening on port "+ PORT);}); 
+module.exports = app;
+
