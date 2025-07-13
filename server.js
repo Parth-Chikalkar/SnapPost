@@ -7,11 +7,12 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const UserModel = require('./Models/UserModel');
+const path = require('path');
 app.use(cookieParser());
-
-dotEnv.config()
-
-
+// app.set('views', path.join(__dirname, '../views'));
+dotEnv.config({ path: './src/.env' });
+const PORT = process.env.PORT || 3500 ;
+// app.use(express.static(path.join(__dirname, 'views')));
 app.set("view engine","ejs");
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
@@ -84,8 +85,7 @@ app.post("/create",async (req,res)=>{
     const token = jwt.sign({username,image_url},"SecretOfParth?");
     res.cookie("token",token);
     res.redirect("/");
-    
-    
+
     }
     else{
         res.send("UserName Already Exists , Pleasee try something else");
@@ -190,6 +190,4 @@ app.get("/postDetail/:id",async (req, res) => {
     const userData = jwt.verify(req.cookies.token,"SecretOfParth?");
     res.render("postDetail",{data,userData});
 })
-// app.listen(PORT, function(){console.log("Server Is listening on port "+ PORT);}); 
-module.exports = app;
-
+app.listen(PORT, function(){console.log("Server Is listening on port "+ PORT);}); 

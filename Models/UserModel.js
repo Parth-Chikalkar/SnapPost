@@ -3,6 +3,7 @@ const dotEnv = require('dotenv');
 
 // Load environment variables from.env file 
 
+
 dotEnv.config();
 
 const MONGO_URI = process.env.MONGO_URI
