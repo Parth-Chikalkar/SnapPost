@@ -106,7 +106,13 @@ app.get("/edit",async (req, res)=>{
       if (req.file) {
       const result = await cloudinary.uploader.upload(req.file.path);
       image_urlL = result.secure_url;
-      fs.unlink(req.file.path); 
+      fs.unlink(req.file.path,(err)=>{
+        if (err) {
+    console.error('Error deleting file:', err);
+  } else {
+    console.log('File deleted successfully');
+  }
+      }); 
     }
 
 
