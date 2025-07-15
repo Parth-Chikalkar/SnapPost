@@ -106,7 +106,7 @@ app.get("/edit",async (req, res)=>{
       if (req.file) {
       const result = await cloudinary.uploader.upload(req.file.path);
       image_urlL = result.secure_url;
-      fs.unlinkSync(req.file.path); 
+      fs.unlink(req.file.path); 
     }
 
 
