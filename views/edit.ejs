@@ -10,13 +10,15 @@
     <a href="/profile" class="text-blue-200 absolute right-3 top-4">Go Back</a>
     <div class="h-screen w-full bg-zinc-900 flex-col flex text-white justify-center items-center">
        <h1 class="text-2xl" >Edit Up !</h1>
-       <form action="/editt" method="post" class="mt-5 flex flex-col gap-3">
+       <form action="/editt" method="post" enctype="multipart/form-data" class="mt-5 flex flex-col gap-3">
         <input type="text"  placeholder="Name" name="name" value="<%= editDt.name %>"  class="h-10 text-black p-2 w-64 rounded-md bg-blue-100">
         <input type="text"  placeholder="Username" name="username" value="<%= editDt.username %>" class="h-10 text-black p-2 w-64 rounded-md bg-blue-100">
        
         
         <textarea type="text" placeholder="Description" name="descriptiom" class="h-16 resize-none text-black p-2 w-64 rounded-md bg-blue-100"><%= editDt.description %></textarea>
-        <input type="text" placeholder="Image_url" name="image_url" value="<%= editDt.image_url %>" class="h-10 text-black p-2 w-64 rounded-md bg-blue-100">
+
+         <input accept="image/*"  type="file" placeholder="Image_url" name="image_url" class="h-10 text-black p-2 w-64 rounded-md bg-blue-100">
+        
         <button class="px-3 bg-blue-600 text-white rounded-md py-2" type="submit">Edit</button>
        </form>  
     </div>

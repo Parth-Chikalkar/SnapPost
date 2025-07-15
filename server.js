@@ -8,6 +8,9 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const UserModel = require('./Models/UserModel');
 const path = require('path');
+const fs = require('fs');
+const upload = require('./multer')
+const cloudinary = require('./Cloudinary/Cloudinary.js');
 app.use(cookieParser());
 // app.set('views', path.join(__dirname, '../views'));
 dotEnv.config({ path: './src/.env' });
@@ -44,7 +47,7 @@ app.post("/log",async (req,res)=>{
     bcrypt.compare(password,user.password,(err,result)=>{
       if(result){
         
-        const token = jwt.sign({username,image_url:user.image_url},"SecretOfParth?");
+        const token = jwt.sign({username,image_url:user.image_url},"process.env.JWT_KEY");
         res.cookie("token",token);
         res.redirect("/");
       }
@@ -55,13 +58,10 @@ app.post("/log",async (req,res)=>{
 
 })
 
-app.get("/profile",isLoggedin,async (req,res)=>{
-    
-    const user = jwt.verify(req.cookies.token,"SecretOfParth?");
+app.get("/profile",isLoggedin,async (req,res)=>{ 
+    const user = jwt.verify(req.cookies.token,"process.env.JWT_KEY");
     const userData = await userModel.findOne({username:user.username});
-   
-    const postData = await postModel.find({userId:userData._id});
-   
+    const postData = await postModel.find({userId:userData._id}); 
     res.render("profile",{data:userData,data1 :postData});
 })
 app.get("/sign_up",(req,res)=>{
@@ -82,7 +82,7 @@ app.post("/create",async (req,res)=>{
             description : descriptiom,
             image_url : image_url || "https://up.yimg.com/ib/th?id=OIP.l3waMeOdc8D_y_odZx2IcwHaHa&pid=Api&rs=1&c=1&qlt=95&w=113&h=113",
            });
-    const token = jwt.sign({username,image_url},"SecretOfParth?");
+    const token = jwt.sign({username,image_url},"process.env.JWT_KEY");
     res.cookie("token",token);
     res.redirect("/");
 
@@ -92,17 +92,28 @@ app.post("/create",async (req,res)=>{
     }
 })
 app.get("/edit",async (req, res)=>{
-    const user = jwt.verify(req.cookies.token,"SecretOfParth?");
+    const user = jwt.verify(req.cookies.token,"process.env.JWT_KEY");
     const editDt = await UserModel.findOne({username:user.username});
     res.render("edit",{editDt});
 })
- app.post("/editt",isLoggedin, async (req, res)=>{
-    const user = jwt.verify(req.cookies.token,"SecretOfParth?");
-    const editDt = await UserModel.findOne({username:user.username});
+ app.post("/editt",isLoggedin, upload.single('image_url'), async (req, res)=>{
+    const user = jwt.verify(req.cookies.token,"process.env.JWT_KEY");
    
+    const editDt = await UserModel.findOne({username:user.username});
+    let image_urlL = editDt.image_url;
+    
     const {name,username,image_url,descriptiom} = req.body;
-    const edit = await UserModel.findOneAndUpdate({username:user.username},{$set :{name, username, description : descriptiom, image_url:image_url || "https://up.yimg.com/ib/th?id=OIP.l3waMeOdc8D_y_odZx2IcwHaHa&pid=Api&rs=1&c=1&qlt=95&w=113&h=113" }},{new :true,});
-    const postupdate = await postModel.findOneAndUpdate({userId:editDt._id},{$set : {profile_url:image_url || "https://up.yimg.com/ib/th?id=OIP.l3waMeOdc8D_y_odZx2IcwHaHa&pid=Api&rs=1&c=1&qlt=95&w=113&h=113"}},{new:true});
+      if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.path);
+      image_urlL = result.secure_url;
+      fs.unlinkSync(req.file.path); 
+    }
+
+
+    // const uploadImg = cloudinary.uploader.upload(image_url);
+    console.log(image_urlL);
+    const edit = await UserModel.findOneAndUpdate({username:user.username},{$set :{name, username, description : descriptiom, image_url:image_urlL || "https://up.yimg.com/ib/th?id=OIP.l3waMeOdc8D_y_odZx2IcwHaHa&pid=Api&rs=1&c=1&qlt=95&w=113&h=113" }},{new :true,});
+    const postupdate = await postModel.findOneAndUpdate({userId:editDt._id},{$set : {profile_url:image_urlL || "https://up.yimg.com/ib/th?id=OIP.l3waMeOdc8D_y_odZx2IcwHaHa&pid=Api&rs=1&c=1&qlt=95&w=113&h=113"}},{new:true});
    
     res.redirect("/profile")
  })
@@ -115,7 +126,7 @@ app.get("/", async (req, res) => {
     if (!cookie) {
         return res.render("home",{dataa,postdata});
     } else {
-        const user = jwt.verify(cookie, "SecretOfParth?");
+        const user = jwt.verify(cookie, "process.env.JWT_KEY");
         dataa = await userModel.findOne({ username: user.username });      
         const postData = await postModel.find();
       
@@ -127,14 +138,28 @@ app.get("/", async (req, res) => {
 app.get("/createPost",(req,res)=>{
     res.render("createPost");
 })
-app.post("/createP", async (req,res)=>{
-    const user = jwt.verify(req.cookies.token, "SecretOfParth?");
+app.post("/createP", upload.single('image_url'), async (req,res)=>{
+    const user = jwt.verify(req.cookies.token, "process.env.JWT_KEY");
     const userName = await userModel.findOne({ username: user.username });
-    const {image_url, descriptiom} = req.body;
+    const {descriptiom} = req.body;
+
+    let uploadedImageUrl = "";
+
+    if (req.file) {
+      
+      const result = await cloudinary.uploader.upload(req.file.path);
+      uploadedImageUrl = result.secure_url;
+
+     
+      if (fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+    }
+    
     const post = await postModel.create({
         profile_url:userName.image_url,
         username:userName.username,
-        image_url,
+        image_url : uploadedImageUrl,
         postDescription : descriptiom,
         userId : userName._id,
     });
@@ -154,40 +179,12 @@ app.post("/createP", async (req,res)=>{
     
     res.render("profileDetails",{data,data1});
  })
-//  app.get("/like/:postid", async (req,res)=>{
-//      const pid = req.params.postid;
-//      const tok = req.cookies.token
-     
-//       const username =  jwt.verify(tok,"SecretOfParth?");
-     
-//       const user = await userModel.findOne({username:username.username});
-//       const alreadyLiked = await postModel.findOne({
-//         _id: pid,
-//         "likes._id": user._id,
-//       });
-//       if(alreadyLiked) {
-//         const updatedPost = await postModel.findByIdAndUpdate(
-//             pid,
-//             { $pull: { likes: { _id: user._id } } },
-//             { new: true }
-//           );
-//           return res.redirect("/");
-//       }
-    
-//      const li = await postModel.findByIdAndUpdate(pid,{
-//         $push: { likes: { _id: user._id } } } , 
-//         { new: true }
-//     );
-    
-//     res.redirect("/");
-     
 
-//  })
 app.get("/postDetail/:id",async (req, res) => {
     const id = req.params.id;
     
     const data = await postModel.findById(id);
-    const userData = jwt.verify(req.cookies.token,"SecretOfParth?");
+    const userData = jwt.verify(req.cookies.token,"process.env.JWT_KEY");
     res.render("postDetail",{data,userData});
 })
 app.listen(PORT, function(){console.log("Server Is listening on port "+ PORT);}); 
