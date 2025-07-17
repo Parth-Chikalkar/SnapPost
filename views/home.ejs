@@ -42,7 +42,7 @@
       
     </div>
     <% if (!dataa || !dataa.username  ) {
-        %> <div class="w-96 text-white  flex flex-col items-center mx-auto rounded-md p-5 bg-zinc-800  mt-10">
+        %> <div class="w-96 text-white  flex flex-col items-center lg:mx-auto rounded-md p-5 bg-zinc-800  mt-10">
             <h1 class="italic text-2xl font-semibold mx-auto">Welcome to SnapPost!</h1>
             <p class="mt-2 leading-tight text-center">
                 "Welcome to SnapPost, your ultimate destination to share and cherish your favorite moments! Whether it’s a breathtaking sunset, a candid smile, or a milestone memory, our platform lets you effortlessly post, organize, see posts, and share your photos with the world. Connect with a community of creators, explore stunning visuals, and showcase your unique perspective. Start capturing memories and telling your story today on SnapPost!"
@@ -61,7 +61,7 @@
                   <% } else { %>
                     <% postdata.forEach((val) => { %>
                       <div class="w-full   flex flex-col gap-3 mx-auto ">
-                        <div class=" lg:px-64">
+                        <div class=" lg:px-64 ">
                           <div class="bg-zinc-800 lg:p-6 w-full  p-2  rounded-lg">
                             <div class="w-full flex my-2 rounded-md items-center overflow-hidden justify-left">
                               <img src="<%= val.profile_url%>" class="rounded-full h-14 w-14 object-cover object-top mb-2" alt="">

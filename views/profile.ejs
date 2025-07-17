@@ -7,10 +7,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-zinc-900 relative">
-<a href="/" class="text-blue-200 absolute right-3 top-4">Home</a>
+
     <div class="lg:w-3/5 p-5  text-white  border-2 border-zinc-800 rounded-md mx-auto container h-screen bg-zinc-900 ">
            <div class="flex overflow-hidden gap-6 h-36 ">
-            <img src="<%= data.image_url %>" class="lg:h-full h-36 my-auto object-cover object-top  w-36 rounded-full " alt="user">
+            <img src="<%= data.image_url %>" class="lg:h-full h-36 my-auto object-cover object-top lg:w-36 w-full rounded-full " alt="user">
             <div class=" h-full flex flex-col item-center justify-center  ">
                 <div class="">
                     <h1 class="text-white text-2xl font-thin mb-4"><%= data.username %></h1>
@@ -22,7 +22,7 @@
                 </div>
                 <div class="">
                     <h1 class="text-sm font-semibold mt-2"><%= data.name %></h1>
-                    <p class=" leading-tight  text-sm font-thin"><%= data.description %></p>
+                    <p class=" leading-tight text-sm font-thin"><%= data.description %></p>
                 </div>
                
                 
@@ -31,7 +31,7 @@
            <hr class="w-full bg-zinc-400 h-[1px] my-3">
            <div class="w-full mt-4" >
             <h1 class="font-semibold text-2xl">Your Posts : </h1>
-            <div class="mt-3 w-full h-full gap-2 flex flex-wrap">
+            <div class="mt-3 w-full h-full gap-2 flex ">
                 <% if(data1.length==0){ %>
                    <h1>No Posts Yet !</h1>
                <% } else{ %>
@@ -51,6 +51,6 @@
             </div>
            </div>
     </div>
-   
+   <a href="/" class="text-blue-200 absolute right-3 top-4">Home</a>
 </body>
 </html>
