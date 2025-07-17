@@ -60,7 +60,7 @@
         
                   <% } else { %>
                     <% postdata.forEach((val) => { %>
-                      <div class="w-full   flex flex-col gap-3 mx-auto ">
+                      <div class="w-full flex flex-col gap-3 mx-auto ">
                         <div class=" lg:px-64 ">
                           <div class="bg-zinc-800 lg:p-6 w-full  p-2  rounded-lg">
                             <div class="w-full flex my-2 rounded-md items-center overflow-hidden justify-left">
@@ -69,9 +69,10 @@
                               <a href="/profile/<%= val.username %>" class="ml-3 text-xl text-blue-500 font-thin"><%= val.username %></a>
                               
                             </div>
-                            <div>
+                            <div class="leading-tight h-fit">
                             <img src="<%= val.image_url %>" class="w-full  object-cover object-top  bg-pink-300 rounded-md object-cover" alt="">
-                            <p class="mt-2 text-white font-semibold mb-3"><%= val.postDescription || "" %></p>
+                            <p class="mt-2 text-white font-semibold mb-3"><%= val.postDescription || "" %> <br> <span class="text-white/50 text-sm font-thin">Posted on <%= val.date.toISOString().split("T")[0] %> </span></p>
+                           
                             <!-- <a href="/like/<%= val._id %>" class="px-2 py-2 bg-red-500 text-white  rounded-full my-1">💗 Like</a> -->
                           </div>
                         </div>
