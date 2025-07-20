@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin </title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-zinc-900">
+
+  
+  <div class="w-full nav h-16 p-5 flex justify-between items-center border-b border-zinc-700">
+    <div class="flex items-center">
+      <img src="https://tse2.mm.bing.net/th?id=OIP.rfPfLFlZ3Y-DlOxxHPQKzgHaHa&pid=Api&P=0&h=180" class="h-12 rounded-full" alt="">
+      <h1 class="text-2xl italic text-white ml-3">SnapPost</h1>
+    </div>
+    <a href="/logout" class="px-4 py-2 bg-red-600 text-white rounded-md">Logout</a>
+  </div>
+
+  <!-- Page Content -->
+  <div class="p-4 lg:px-20 text-white">
+    <h1 class="text-green-500 ">Welcome Parth Sir !</h1>
+    <h2 class="text-3xl font-semibold mb-6 mt-4 text-center">User Management</h2>
+
+    <% if (user.length === 0) { %>
+      <p class="text-center text-zinc-400">No users registered yet.</p>
+    <% } else { %>
+      <div class="overflow-x-auto">
+        <table class="w-full table-auto border-collapse bg-zinc-800 rounded-lg overflow-hidden shadow-md">
+          <thead class="bg-zinc-700 text-left text-white">
+            <tr>
+              <th class="px-4 py-3">Sr_No</th>
+              <th class="px-4 py-3">Username</th>
+              <th class="px-4 py-3">Name</th>
+              <th class="px-4 py-3">Email</th>
+              
+              <th class="px-4 py-3">Description</th>
+              <th class="px-4 py-3">Profile Image</th>
+              <th class="px-4 py-3">Remove</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% user.forEach((u, index) => { %>
+              <tr class="border-b border-zinc-700 hover:bg-zinc-700">
+                <td class="px-4 py-3"><%= index + 1 %></td>
+                <td class="px-4 py-3"><%= u.username %></td>
+                <td class="px-4 py-3"><%= u.name || "-" %></td>
+                <td class="px-4 py-3"><%= u.email || "-" %></td>
+                
+                <td class="px-4 py-3 leading-tight forEach text-sm "><%= u.description || "—" %></td>
+                <td class="px-4 py-3">
+                  <img src="<%= u.image_url %>" class="h-10 w-10 rounded-full object-cover" alt="img">
+                </td>
+                <td class="px-4 py-3 text-red-500 hover:cursor-pointer  "><a href="removeUser/<%=u.username%> ">Remove</a></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </div>
+
+</body>
+</html>

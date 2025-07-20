@@ -45,8 +45,9 @@
         %> <div class="w-96 text-white  flex flex-col items-center lg:mx-auto rounded-md p-5 bg-zinc-800  mt-10">
             <h1 class="italic text-2xl font-semibold mx-auto">Welcome to SnapPost!</h1>
             <p class="mt-2 leading-tight text-center">
-                "Welcome to SnapPost, your ultimate destination to share and cherish your favorite moments! Whether it’s a breathtaking sunset, a candid smile, or a milestone memory, our platform lets you effortlessly post, organize, see posts, and share your photos with the world. Connect with a community of creators, explore stunning visuals, and showcase your unique perspective. Start capturing memories and telling your story today on SnapPost!"
-            </p>
+Welcome to SnapPost — a simple and personal space to share and preserve your favorite moments. Whether it's a scenic view, a happy memory, or something that made you smile, SnapPost lets you post, organize, and view your photos with ease.
+
+This is a personal project, so please use it respectfully. Any inappropriate or unauthorized content may result in account suspension. Let's keep this space clean and enjoyable!            </p>
             <!-- <h3 class="mt-5 text-xl font-semibold ">~Created By Parth Sachin Chikalkar</h3> -->
         </div>  
         <% } else { %>
@@ -72,8 +73,8 @@
                             <div class="leading-tight h-fit">
                             <img src="<%= val.image_url %>" class="w-full  object-cover object-top  bg-pink-300 rounded-md object-cover" alt="">
                             <p class="mt-2 text-white font-semibold mb-3"><%= val.postDescription || "" %> <br> <span class="text-white/50 text-sm font-thin">Posted on <%= val.date.toISOString().split("T")[0] %> </span></p>
-                           
-                            <!-- <a href="/like/<%= val._id %>" class="px-2 py-2 bg-red-500 text-white  rounded-full my-1">💗 Like</a> -->
+                            
+                            
                           </div>
                         </div>
                       </div>
