@@ -230,7 +230,7 @@ app.get("/profile/:username", async (req, res) => {
   res.render("profileDetails", { data, data1 });
 });
 
-app.get("/postDetail/:id", async (req, res) => {
+app.get("/postDetail/:id", isLoggedin,async (req, res) => {
   const id = req.params.id;
 
   const data = await postModel.findById(id);
@@ -248,6 +248,22 @@ app.get("/removeUser/:username", async (req, res) => {
 
   return res.redirect("/admin");
 });
+
+    app.get("/search",(req,res)=>{
+         res.render("searchUser.ejs",{exist : null , username : null,  u: null,
+        p: []});
+     })
+
+     app.post("/searchUser",async (req,res)=>{
+      const {username} = req.body;
+      const requestedUser = await userModel.findOne({username});
+       if(!requestedUser){
+        return res.render("searchUser.ejs" ,{exist : false , username ,  u: null,
+        p: []});
+       }
+       const userPosts = await postModel.find({ userId: requestedUser._id }); 
+       return res.render("searchUser.ejs",{exist : true , u: requestedUser,p: userPosts});
+     })
 app.listen(PORT, function () {
   console.log("Server Is listening on port " + PORT);
 });

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <script src="https://cdn.tailwindcss.com"></script>
+    <title>Search</title>
+</head>
+<body>
+    <div class="w-full h-screen overflow-hidden bg-zinc-900">
+        <div class="nav w-full flex flex-col md:flex-row md:h-16 gap-3 md:gap-0 items-center justify-between px-4 py-2 bg-zinc-900">
+  <div class="flex items-center gap-2">
+    <img src="https://tse2.mm.bing.net/th?id=OIP.rfPfLFlZ3Y-DlOxxHPQKzgHaHa&pid=Api&P=0&h=180" class="h-10 w-10 rounded-full object-cover" alt="">
+    <h1 class="text-xl md:text-2xl italic text-white">SnapPost</h1>
+  </div>
+  <form action="/searchUser" method="post" class="w-full md:w-1/3 flex gap-2">
+    <input
+      type="text"
+      name="username"
+      required
+      placeholder="Search"
+      class="flex-1 bg-zinc-800 text-white/80 h-10 rounded-md px-3 placeholder:text-sm focus:outline-none"
+    >
+    <button type="submit" class="text-sm px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white">
+      Search
+    </button>
+  </form>
+  <a href="/" class="text-blue-200 text-sm md:ml-4">
+    Home
+  </a>
+
+</div>
+
+        <hr>
+       <div class="w-full flex flex-col md:flex-row items-center gap-4 md:pt-5 text-white justify-center h-fit">
+
+
+        <% if(exist){
+            %>
+            <div class="user_info md:w-1/5 w-full bg-zinc-900 items-center  border-[1px] flex flex-col  h-fit  rounded-lg p-5  ">
+               <img src="<%= u.image_url %>" class="rounded-lg object-top md:h-64 h-72  w-full object-cover object-top" alt="img">
+             <div class="mt-4 flex flex-col items-center gap-3">
+                <div class="flex items-center flex-col">
+                      <h1 ><%=u.name%></h1>
+               <h1 class="text-sm text-white/50" ><%=u.description %></h1>
+                </div>
+                <h1 class="text-sm mt-2 ">Contact : <span class="hover:underline"><%= u.email %></span> </h1>
+                <h1 class="text-sm">No of Posts : <%= p.length %></h1>
+                
+             </div>
+
+
+            </div>
+            <div class="post_info gap-4 p-5 w-full  h-fit flex flex-wrap  md:w-1/2 border-[1px] rounded-lg ">
+               <% p.forEach(val => {%>
+               
+                        <div class="card h-42 w-36 flex flex-col items-center justify-center bg-zinc-800 overflow-hidden rounded-md p-2 ">
+                            <img src="<%= val.image_url %>" class="h-36 w-36 object-cover object-top  rounded-md bg-blue-300 object-cover "  alt="">
+                            <p class="text-sm leading-tight text-white/50 mt-1  "><%=val.postDescription %></p>
+                           
+                        </div>
+                        
+                <%}) %>
+               
+
+
+
+
+            </div>
+             
+            
+            
+            
+            
+            <%
+        } else {
+            %> 
+            <h1>No user registered with <span class="text-2xl text-purple-500  "> <%= username %></span> username</h1>
+            <%
+        } %>
+
+
+        </div>
+    </div>
+
+</body>
+</html>
