@@ -250,7 +250,7 @@ app.get("/removeUser/:username", async (req, res) => {
 });
 
     app.get("/search",(req,res)=>{
-         res.render("searchUser.ejs",{exist : null , username : null,  u: null,
+         res.render("SearchUser.ejs",{exist : null , username : null,  u: null,
         p: []});
      })
 
@@ -258,11 +258,11 @@ app.get("/removeUser/:username", async (req, res) => {
       const {username} = req.body;
       const requestedUser = await userModel.findOne({username});
        if(!requestedUser){
-        return res.render("searchUser.ejs" ,{exist : false , username ,  u: null,
+        return res.render("SearchUser.ejs" ,{exist : false , username ,  u: null,
         p: []});
        }
        const userPosts = await postModel.find({ userId: requestedUser._id }); 
-       return res.render("searchUser.ejs",{exist : true , u: requestedUser,p: userPosts});
+       return res.render("SearchUser.ejs",{exist : true , u: requestedUser,p: userPosts});
      })
 app.listen(PORT, function () {
   console.log("Server Is listening on port " + PORT);
