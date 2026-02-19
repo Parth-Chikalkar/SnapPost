@@ -9,7 +9,12 @@
         postDescription : String,
         userId : {type : mongoose.Schema.Types.ObjectId,ref:'User'},
         date:{type: Date , default:Date.now},
-        likes : Array,
+        likes : [
+              {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+        ],
     })
 
     module.exports = mongoose.model("Post",postSchema);

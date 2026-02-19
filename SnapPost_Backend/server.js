@@ -1,269 +1,166 @@
+const dotenv = require("dotenv");
 const express = require("express");
-const app = express();
-const dotEnv = require("dotenv");
-const userModel = require("./Models/UserModel");
-const postModel = require("./Models/PostModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
-const UserModel = require("./Models/UserModel");
-const path = require("path");
+const cors = require("cors");
 const fs = require("fs");
+const userRoute = require("./Routes/UserRoute")
+const userModel = require("./Models/UserModel");
+const postModel = require("./Models/PostModel");
 const upload = require("./multer");
-const cloudinary = require("./Cloudinary/Cloudinary.js");
-const { log } = require("console");
-app.use(cookieParser());
-// app.set('views', path.join(__dirname, '../views'));
-dotEnv.config({ path: "./src/.env" });
+const cloudinary = require("./Cloudinary/Cloudinary");
+const http = require('http');
+
+const app = express();
+const server = http.createServer(app);
 const PORT = process.env.PORT || 3500;
-// app.use(express.static(path.join(__dirname, 'views')));
-app.set("view engine", "ejs");
+const postRoute = require("./Routes/PostRoute");
+const commentRoute = require("./Routes/CommentRoute");
+/* ---------------- MIDDLEWARE ---------------- */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
-const isLoggedin = (req, res, next) => {
-  if (!req.cookies.token) {
-    return res.redirect("/login");
-  }
-  next();
-};
-const adminUser = process.env.SYSTEM_ADMIN_USERNAME;
-const adminPass = process.env.SYSTEM_ADMIN_PASSWORD;
-const isLoggedinasAdmin = async (req, res, next) => {
-  if (!req.cookies.token) {
-    return res.redirect("/login");
-  } else {
-    const { username, password } = jwt.verify(
-      req.cookies.token,
-      "process.env.JWT_KEY"
-    );
+app.use(
+  cors({
+    origin: "http://localhost:5173", 
+    credentials: true,
+  })
+);
 
-    if (username != adminUser || password != adminPass) {
-      return res.redirect("/login");
-    }
-  }
-  next();
-};
+app.use("/api/post", postRoute);
+app.use("/api/user",userRoute);
 
-app.get("/logout", (req, res) => {
-  res.cookie("token", "");
-  res.redirect("/");
-});
+app.use("/api/comments", commentRoute);
 
-app.get("/login", (req, res) => {
-  res.render("login");
-});
-app.post("/log", async (req, res) => {
-  const { username, password } = req.body;
-  const user = await userModel.findOne({ username });
 
-  // Check For Admin
-  if (adminUser == username && adminPass == password) {
-    const token = jwt.sign({ username, password }, "process.env.JWT_KEY");
-    res.cookie("token", token);
-    return res.redirect("/admin");
-  }
-  if (!user) {
-    return res.send("Invalid Username or Password");
-  }
-  bcrypt.compare(password, user.password, (err, result) => {
-    if (result) {
-      const token = jwt.sign(
-        { username, image_url: user.image_url },
-        "process.env.JWT_KEY"
-      );
-      res.cookie("token", token);
-      return res.redirect("/");
-    } else {
-      return res.send("Invalid Username or Password");
-    }
-  });
-});
+//   const token = req.cookies?.token;
+//   if (!token) {
+//     return res.status(401).json({ success: false, message: "Unauthorized" });
+//   }
 
-app.get("/admin", isLoggedinasAdmin, async (req, res) => {
-  const user = await userModel.find();
-  const post = await postModel.find();
-  res.render("admin.ejs", { user, post });
-});
+//   try {
+//     req.user = jwt.verify(token, process.env.JWT_KEY);
+//     next();
+//   } catch (err) {
+//     return res.status(401).json({ success: false, message: "Invalid token" });
+//   }
+// };
 
-app.get("/profile", isLoggedin, async (req, res) => {
-  const user = jwt.verify(req.cookies.token, "process.env.JWT_KEY");
-  const userData = await userModel.findOne({ username: user.username });
-  const postData = await postModel.find({ userId: userData._id });
-  res.render("profile", { data: userData, data1: postData });
-});
-app.get("/sign_up", (req, res) => {
-  res.render("sign_up");
-});
-app.post("/create", async (req, res) => {
-  const { name, username, email, phnNum, password, image_url, descriptiom } =
-    req.body;
-  const ifExists = await userModel.findOne({ username });
-  if (!ifExists) {
-    const salt = await bcrypt.genSalt(10);
-    const hashed = await bcrypt.hash(password, salt);
-    const user = await userModel.create({
-      name,
-      username,
-      email,
-      phnNum,
-      password: hashed,
-      description: descriptiom,
-      image_url:
-        image_url ||
-        "https://up.yimg.com/ib/th?id=OIP.l3waMeOdc8D_y_odZx2IcwHaHa&pid=Api&rs=1&c=1&qlt=95&w=113&h=113",
-    });
-    const token = jwt.sign({ username, image_url }, "process.env.JWT_KEY");
-    res.cookie("token", token);
-    res.redirect("/");
-  } else {
-    res.send("UserName Already Exists , Pleasee try something else");
-  }
-});
-app.get("/edit", async (req, res) => {
-  const user = jwt.verify(req.cookies.token, "process.env.JWT_KEY");
-  const editDt = await UserModel.findOne({ username: user.username });
-  res.render("edit", { editDt });
-});
-app.post("/editt", isLoggedin, upload.single("image_url"), async (req, res) => {
-  const user = jwt.verify(req.cookies.token, "process.env.JWT_KEY");
+// const isAdmin = (req, res, next) => {
+//   const { username, password } = req.user;
+//   if (
+//     username !== process.env.SYSTEM_ADMIN_USERNAME ||
+//     password !== process.env.SYSTEM_ADMIN_PASSWORD
+//   ) {
+//     return res.status(403).json({ success: false, message: "Admin only" });
+//   }
+//   next();
+// };
 
-  const editDt = await UserModel.findOne({ username: user.username });
-  let image_urlL = editDt.image_url;
+// app.post("/api/login", async (req, res) => {
+//   const { username, password } = req.body;
 
-  const { name, username, image_url, descriptiom } = req.body;
-  if (req.file) {
-    const result = await cloudinary.uploader.upload(req.file.path);
-    image_urlL = result.secure_url;
-    fs.unlink(req.file.path, (err) => {
-      if (err) {
-        console.error("Error deleting file:", err);
-      } else {
-        console.log("File deleted successfully");
-      }
-    });
-  }
+//   if (
+//     username === process.env.SYSTEM_ADMIN_USERNAME &&
+//     password === process.env.SYSTEM_ADMIN_PASSWORD
+//   ) {
+//     const token = jwt.sign({ username, password }, process.env.JWT_KEY);
+//     res.cookie("token", token, { httpOnly: true });
+//     return res.json({ success: true, role: "admin" });
+//   }
 
-  // const uploadImg = cloudinary.uploader.upload(image_url);
-  console.log(image_urlL);
-  const edit = await UserModel.findOneAndUpdate(
-    { username: user.username },
-    {
-      $set: {
-        name,
-        username,
-        description: descriptiom,
-        image_url:
-          image_urlL ||
-          "https://up.yimg.com/ib/th?id=OIP.l3waMeOdc8D_y_odZx2IcwHaHa&pid=Api&rs=1&c=1&qlt=95&w=113&h=113",
-      },
-    },
-    { new: true }
-  );
-  const postupdate = await postModel.findOneAndUpdate(
-    { userId: editDt._id },
-    {
-      $set: {
-        profile_url:
-          image_urlL ||
-          "https://up.yimg.com/ib/th?id=OIP.l3waMeOdc8D_y_odZx2IcwHaHa&pid=Api&rs=1&c=1&qlt=95&w=113&h=113",
-      },
-    },
-    { new: true }
-  );
+//   const user = await userModel.findOne({ username });
+//   if (!user) {
+//     return res.status(401).json({ success: false, message: "Invalid credentials" });
+//   }
 
-  res.redirect("/profile");
-});
-app.get("/", async (req, res) => {
-  const cookie = req.cookies.token;
-  let dataa = {};
-  let postdata = [];
-  if (!cookie) {
-    return res.render("home", { dataa, postdata });
-  } else {
-    const user = jwt.verify(cookie, "process.env.JWT_KEY");
-    dataa = await userModel.findOne({ username: user.username });
-    const postData = await postModel.find();
+//   const match = await bcrypt.compare(password, user.password);
+//   if (!match) {
+//     return res.status(401).json({ success: false, message: "Invalid credentials" });
+//   }
 
-    return res.render("home", { dataa, postdata: postData });
-  }
-});
-app.get("/createPost", (req, res) => {
-  res.render("createPost");
-});
-app.post("/createP", upload.single("image_url"), async (req, res) => {
-  const user = jwt.verify(req.cookies.token, "process.env.JWT_KEY");
-  const userName = await userModel.findOne({ username: user.username });
-  const { descriptiom } = req.body;
+//   const token = jwt.sign(
+//     { username: user.username, image_url: user.image_url },
+//     process.env.JWT_KEY
+//   );
 
-  let uploadedImageUrl = "";
+//   res.cookie("token", token, { httpOnly: true });
+//   res.json({ success: true, user });
+// });
 
-  if (req.file) {
-    const result = await cloudinary.uploader.upload(req.file.path);
-    uploadedImageUrl = result.secure_url;
+// app.post("/api/logout", (req, res) => {
+//   res.clearCookie("token");
+//   res.json({ success: true });
+// });
 
-    if (fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path);
-    }
-  }
+// app.post("/api/signup", async (req, res) => {
+//   const { name, username, email, phnNum, password } = req.body;
 
-  const post = await postModel.create({
-    profile_url: userName.image_url,
-    username: userName.username,
-    image_url: uploadedImageUrl,
-    postDescription: descriptiom,
-    userId: userName._id,
-  });
-  res.redirect("/profile");
-});
-app.get("/deletePost/:id", async (req, res) => {
-  const id = req.params.id;
-  const post = await postModel.findByIdAndDelete({ _id: id });
-  res.redirect("/profile");
-});
+//   const exists = await userModel.findOne({ username });
+//   if (exists) {
+//     return res.status(400).json({ success: false, message: "User exists" });
+//   }
 
-app.get("/profile/:username", async (req, res) => {
-  const username = req.params.username;
-  const data = await userModel.findOne({ username });
-  const data1 = await postModel.find({ userId: data._id });
+//   const hashed = await bcrypt.hash(password, 10);
 
-  res.render("profileDetails", { data, data1 });
-});
+//   const user = await userModel.create({
+//     name,
+//     username,
+//     email,
+//     phnNum,
+//     password: hashed,
+//   });
 
-app.get("/postDetail/:id", isLoggedin,async (req, res) => {
-  const id = req.params.id;
+//   const token = jwt.sign({ username }, process.env.JWT_KEY);
+//   res.cookie("token", token, { httpOnly: true });
 
-  const data = await postModel.findById(id);
-  const userData = jwt.verify(req.cookies.token, "process.env.JWT_KEY");
-  res.render("postDetail", { data, userData });
-});
+//   res.json({ success: true, user });
+// });
 
-app.get("/removeUser/:username", async (req, res) => {
-  const { username } = req.params;
+// app.get("/api/profile", isLoggedIn, async (req, res) => {
+//   const userData = await userModel.findOne({ username: req.user.username });
+//   const postData = await postModel.find({ userId: userData._id });
+//   res.json({ userData, postData });
+// });
 
-  const user = await userModel.findOne({ username });
 
-  const deletedPost = await postModel.deleteMany({ userId: user._id });
-  const deleted_user = await userModel.deleteOne({ _id: user._id });
+// app.post("/api/post", isLoggedIn, upload.single("image"), async (req, res) => {
+//   let imageUrl = "";
 
-  return res.redirect("/admin");
-});
+//   if (req.file) {
+//     const result = await cloudinary.uploader.upload(req.file.path);
+//     imageUrl = result.secure_url;
+//     fs.unlinkSync(req.file.path);
+//   }
 
-    app.get("/search",(req,res)=>{
-         res.render("SearchUser.ejs",{exist : null , username : null,  u: null,
-        p: []});
-     })
+//   const user = await userModel.findOne({ username: req.user.username });
 
-     app.post("/searchUser",async (req,res)=>{
-      const {username} = req.body;
-      const requestedUser = await userModel.findOne({username});
-       if(!requestedUser){
-        return res.render("SearchUser.ejs" ,{exist : false , username ,  u: null,
-        p: []});
-       }
-       const userPosts = await postModel.find({ userId: requestedUser._id }); 
-       return res.render("SearchUser.ejs",{exist : true , u: requestedUser,p: userPosts});
-     })
-app.listen(PORT, function () {
-  console.log("Server Is listening on port " + PORT);
+//   const post = await postModel.create({
+//     profile_url: user.image_url,
+//     username: user.username,
+//     image_url: imageUrl,
+//     postDescription: req.body.description,
+//     userId: user._id,
+//   });
+
+//   res.json({ success: true, post });
+// });
+
+// app.delete("/api/post/:id", isLoggedIn, async (req, res) => {
+//   await postModel.findByIdAndDelete(req.params.id);
+//   res.json({ success: true });
+// });
+
+
+// app.get("/api/admin", isLoggedIn, isAdmin, async (req, res) => {
+//   const users = await userModel.find();
+//   const posts = await postModel.find();
+//   res.json({ users, posts });
+// });
+
+
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
