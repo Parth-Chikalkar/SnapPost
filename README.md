@@ -18,7 +18,7 @@
 ## 🔗 Live Demo
 
 Experience the platform live:  
-**[SnapPost Live Deployment](https://snappost-v2.vercel.app)**
+**[SnapPost Live Deployment](https://snap-post-sigma.vercel.app)**
 
 ---
 
