@@ -20,9 +20,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+
+//Change as per use 
 app.use(
   cors({
-    origin: "http://localhost:5173", 
+    origin: "http://localhost:5173https://snap-post-sigma.vercel.app", 
     credentials: true,
   })
 );
