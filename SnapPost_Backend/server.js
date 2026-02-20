@@ -24,7 +24,7 @@ app.use(cookieParser());
 //Change as per use 
 app.use(
   cors({
-    origin: "http://localhost:5173https://snap-post-sigma.vercel.app", 
+    origin: "https://snap-post-sigma.vercel.app", 
     credentials: true,
   })
 );
