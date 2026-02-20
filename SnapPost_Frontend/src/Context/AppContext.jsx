@@ -27,7 +27,7 @@ export const AppProvider = ({ children }) => {
         user,
         setUser,
         token,
-        login,
+        login,  
         logout
       }}
     >

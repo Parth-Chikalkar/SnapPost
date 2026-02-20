@@ -1,5 +1,5 @@
 import React from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useLocation } from 'react-router-dom'
 import HomePage from './Pages/HomePage'
 import NavBar from './Components/NavBar'
 import ProfilePage from './Pages/ProfilePage'
@@ -14,12 +14,20 @@ import ProtectedFile from './Components/ProtectedFile'
 import UserProfile from './Pages/UserProfile'
 import EditPost from './Pages/EditPost'
 import NotFound from './Pages/404'
+import Admin from './Pages/Admin'
+import AdminNavBar from './Components/AdminNavBar'
 
 function App() {
+
+  const location = useLocation();
+  const isAdmin = location.pathname.startsWith("/admin");
+
+  
+
   return (
 
     <>
-    <NavBar/>
+    {isAdmin ? <AdminNavBar/> : <NavBar/>}
    <ToastContainer
   position="top-center"
   autoClose={2500}
@@ -51,8 +59,10 @@ function App() {
      <Route path='/createPost' element={ <ProtectedFile><CreatePost/></ProtectedFile>}/>
      <Route path='/postdetails/:id' element={ <ProtectedFile><PostDetail/></ProtectedFile>}/>
      <Route path='/edit-post/:id' element={ <ProtectedFile><EditPost/></ProtectedFile>}/>
+     <Route path='/admin' element={<ProtectedFile><Admin/></ProtectedFile>}/>
      <Route path='/login' element={<LoginPage/>}/>
      <Route path='/signup' element={<SignupPage/>}/>
+     
      <Route path="*" element={<NotFound/>} />
     </Routes>
     </>

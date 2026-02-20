@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const { getParam } = require("../Utils/Token");
 
 const protect = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
@@ -16,4 +17,16 @@ const protect = (req, res, next) => {
   }
 };
 
-module.exports = { protect };
+const isAdmin = (req,res,next)=>{
+  try {
+     const {token} = req.params; 
+  if(getParam(token)==process.env.SYSTEM_ADMIN_USERNAME){
+    next();
+  }
+  } catch (error) {
+    return res.json({success : false , message : error.message});
+  }
+ 
+}
+
+module.exports = { protect , isAdmin };

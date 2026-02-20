@@ -22,11 +22,20 @@ function LoginPage() {
   setloading(true);
   const res= await api.post('/user/login',{username,password});
   if(res.data.success){
-    setUser(res.data.user);
+
+    if(res.data.role=="user") {
+setUser(res.data.user);
     localStorage.setItem("token",res.data.token);
     login(res.data.token);
     nav('/');
     toast.success(res.data.message);
+    }
+    else if(res.data.role=="admin"){
+        localStorage.setItem("token",res.data.token);
+    login(res.data.token);
+    nav('/admin');
+    }
+    
   }
   else{
      toast.error(res.data.message);

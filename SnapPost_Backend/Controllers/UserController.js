@@ -1,28 +1,27 @@
 const check = async (req,res)=>{
     res.send("Hello From Server");
 }
-
 const cloudinary = require("../Cloudinary/Cloudinary"); 
 const userModel = require('../Models/UserModel');
 const bcrypt = require('bcrypt');
 const {genToken, getParam} = require('../Utils/Token');
 const postModel = require("../Models/PostModel");
+const commentModel = require("../Models/CommentModel");
 const fs = require('fs');
 const login = async (req,res)=>{
    try {
-    
      const {username , password} = req.body;
-     // Check For Admin 
+     
        if (
     username === process.env.SYSTEM_ADMIN_USERNAME &&
     password === process.env.SYSTEM_ADMIN_PASSWORD
   ) {
     const token = genToken({username});
     
-    return res.json({ success: true, role: "admin" , token  });
+    return res.json({ success: true, role: "admin" , token});
   }
 
-// Check for aam user 
+ 
      const user = await userModel.findOne({username});
      if(!user || user == undefined) return res.json({message :"Invalid Credentials", success : false});
      const check =  await bcrypt.compare(password,user.password);
@@ -151,7 +150,7 @@ const updateUserProfile = async (req, res) => {
       });
     }
 
-    // 🔒 Prevent duplicate username
+    
     if (username && username !== user.username) {
       const exists = await userModel.findOne({ username });
       if (exists) {
@@ -162,18 +161,18 @@ const updateUserProfile = async (req, res) => {
       }
     }
 
-    // ✅ Update normal fields
+   
     user.name = name || user.name;
     user.username = username || user.username;
     user.description = bio || user.description;
 
-    // 🖼 If image uploaded
+    
     if (req.file) {
       const result = await cloudinary.uploader.upload(req.file.path);
 
       user.image_url = result.secure_url;
 
-      fs.unlinkSync(req.file.path); // remove local file
+      fs.unlinkSync(req.file.path); 
     }
 
     await user.save();
@@ -205,9 +204,58 @@ const searchUsers = async (req,res)=>{
  }
 }
 
+const adminData= async(req,res)=>{
+  try {
+    const user= await userModel.find().select("-password");
+    return res.json({success : true , user});
+  } catch (error) {
+    return res.json({success: false});
+    
+  }
+}
+
+const deleteAcc = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+  
+    const user = await userModel.findById(id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+  const userPosts = await postModel.find({ userId: id });
+    const postIds = userPosts.map(post => post._id);
+
+    
+    await commentModel.deleteMany({ postId: { $in: postIds } });
+
+   
+    await commentModel.deleteMany({ userId: id });
+
+    await postModel.deleteMany({ userId: id });
+
+
+    await userModel.findByIdAndDelete(id);
+
+    return res.status(200).json({
+      success: true,
+      message: `${user.username} deleted successfully`
+    });
+
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
     
 
-module.exports = { login ,signup ,getProfile , getUser ,updateUserProfile , searchUsers};
+module.exports = { login ,signup ,getProfile , getUser ,updateUserProfile , searchUsers , adminData, deleteAcc};
 
 
 
